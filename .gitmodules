@@ -1,0 +1,4 @@
+[submodule "embassy"]
+	path = embassy
+	url = https://github.com/okhsunrog/embassy.git
+	branch = i2c-slave-new

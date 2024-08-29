@@ -1,10 +1,24 @@
+[workspace]
+resolver = "2"
+members = [
+  "embassy/embassy-stm32",
+  "embassy/embassy-sync",
+  "embassy/embassy-executor",
+  "embassy/embassy-time",
+]
+
 [package]
 name = "stm32l071_i2c_slave_test"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "stm32l071_i2c_slave_test"
+harness = false                   # do not use the built-in cargo test harness -> resolve rust-analyzer errors
+test = false
+
 [dependencies]
-embassy-stm32 = { version = "0.1", features = [
+embassy-stm32 = { version = "0.1", path = "./embassy/embassy-stm32", features = [
   "defmt",
   "stm32l071cb",
   "unstable-pac",
@@ -12,14 +26,16 @@ embassy-stm32 = { version = "0.1", features = [
   "exti",
   "memory-x",
 ] }
-embassy-sync = { version = "0.6", features = ["defmt"] }
-embassy-executor = { version = "0.6", features = [
+embassy-sync = { version = "0.6", path = "./embassy/embassy-sync", features = [
+  "defmt",
+] }
+embassy-executor = { version = "0.6", path = "./embassy/embassy-executor", features = [
   "arch-cortex-m",
   "executor-thread",
   "defmt",
   "integrated-timers",
 ] }
-embassy-time = { version = "0.3", features = [
+embassy-time = { version = "0.3", path = "./embassy/embassy-time", features = [
   "defmt",
   "defmt-timestamp-uptime",
   "tick-hz-32_768",
@@ -48,14 +64,3 @@ incremental = false
 codegen-units = 1
 # note: debug = true is okay - debuginfo isn't flashed to the device!
 debug = true
-
-[patch.crates-io]
-# make sure to get the latest git rev from GitHub, you can see the latest one here:
-embassy-executor     = { git = "https://github.com/okhsunrog/embassy",     rev = "051cc88e8e1dfe888cb30e57283ef3ff8eb12154" }
-#embassy-rp           = { git = "https://github.com/okhsunrog/embassy",     rev = "051cc88e8e1dfe888cb30e57283ef3ff8eb12154" }
-embassy-sync         = { git = "https://github.com/okhsunrog/embassy",     rev = "051cc88e8e1dfe888cb30e57283ef3ff8eb12154" }
-embassy-time         = { git = "https://github.com/okhsunrog/embassy",     rev = "051cc88e8e1dfe888cb30e57283ef3ff8eb12154" }
-embassy-time-driver  = { git = "https://github.com/okhsunrog/embassy",     rev = "051cc88e8e1dfe888cb30e57283ef3ff8eb12154" }
-embassy-stm32        = { git = "https://github.com/okhsunrog/embassy",     rev = "051cc88e8e1dfe888cb30e57283ef3ff8eb12154" }
-#embassy-usb          = { git = "https://github.com/okhsunrog/embassy",     rev = "051cc88e8e1dfe888cb30e57283ef3ff8eb12154" }
-#embassy-usb-driver   = { git = "https://github.com/okhsunrog/embassy",     rev = "051cc88e8e1dfe888cb30e57283ef3ff8eb12154" }
