@@ -41,13 +41,21 @@ heapless = { version = "0.8", default-features = false }
 static_cell = { version = "2" }
 portable-atomic = { version = "1.7", features = ["unsafe-assume-single-core"] }
 
-[patch.crates-io]
-embassy-time = { git = "https://github.com/jrmoulton/embassy", rev = "fc342915e6155dec7bafa3e135da7f37a9a07f5c" }
-embassy-time-driver = { git = "https://github.com/jrmoulton/embassy", rev = "fc342915e6155dec7bafa3e135da7f37a9a07f5c" }
-embassy-time-queue-driver = { git = "https://github.com/jrmoulton/embassy", rev = "fc342915e6155dec7bafa3e135da7f37a9a07f5c" }
-embassy-stm32 = { git = "https://github.com/jrmoulton/embassy", rev = "fc342915e6155dec7bafa3e135da7f37a9a07f5c" }
-embassy-sync = { git = "https://github.com/jrmoulton/embassy", rev = "fc342915e6155dec7bafa3e135da7f37a9a07f5c" }
-
-
 [profile.release]
-debug = 2
+lto = "fat"
+opt-level = "s"
+incremental = false
+codegen-units = 1
+# note: debug = true is okay - debuginfo isn't flashed to the device!
+debug = true
+
+[patch.crates-io]
+# make sure to get the latest git rev from GitHub, you can see the latest one here:
+embassy-executor     = { git = "https://github.com/okhsunrog/embassy",     rev = "051cc88e8e1dfe888cb30e57283ef3ff8eb12154" }
+#embassy-rp           = { git = "https://github.com/okhsunrog/embassy",     rev = "051cc88e8e1dfe888cb30e57283ef3ff8eb12154" }
+embassy-sync         = { git = "https://github.com/okhsunrog/embassy",     rev = "051cc88e8e1dfe888cb30e57283ef3ff8eb12154" }
+embassy-time         = { git = "https://github.com/okhsunrog/embassy",     rev = "051cc88e8e1dfe888cb30e57283ef3ff8eb12154" }
+embassy-time-driver  = { git = "https://github.com/okhsunrog/embassy",     rev = "051cc88e8e1dfe888cb30e57283ef3ff8eb12154" }
+embassy-stm32        = { git = "https://github.com/okhsunrog/embassy",     rev = "051cc88e8e1dfe888cb30e57283ef3ff8eb12154" }
+#embassy-usb          = { git = "https://github.com/okhsunrog/embassy",     rev = "051cc88e8e1dfe888cb30e57283ef3ff8eb12154" }
+#embassy-usb-driver   = { git = "https://github.com/okhsunrog/embassy",     rev = "051cc88e8e1dfe888cb30e57283ef3ff8eb12154" }

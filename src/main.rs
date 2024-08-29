@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-use defmt::*;
+use defmt::{info, error};
 use embassy_executor::Spawner;
 use embassy_stm32::{
     bind_interrupts,
@@ -14,22 +14,22 @@ use embassy_time::{Duration, Timer};
 #[allow(unused_imports)]
 use {defmt_rtt as _, panic_probe as _};
 
-const DEV_ADDR: u8 = 0x22;
+const DEV_ADDR: u8 = 0x23;
 
 bind_interrupts!(struct Irqs {
     I2C1 => i2c::EventInterruptHandler<peripherals::I2C1>, i2c::ErrorInterruptHandler<peripherals::I2C1>;
 });
 
-#[embassy_executor::task]
-async fn system_ticker(mut led: Output<'static>) {
-    loop {
-        //info!("Alive!");
-        Timer::after(Duration::from_millis(500)).await;
-        led.set_high();
-        Timer::after(Duration::from_millis(500)).await;
-        led.set_low();
-    }
-}
+// #[embassy_executor::task]
+// async fn system_ticker(mut led: Output<'static>) {
+//     loop {
+//         //info!("Alive!");
+//         Timer::after(Duration::from_millis(500)).await;
+//         led.set_high();
+//         Timer::after(Duration::from_millis(500)).await;
+//         led.set_low();
+//     }
+// }
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) {
@@ -37,7 +37,7 @@ async fn main(spawner: Spawner) {
     {
         use embassy_stm32::rcc::*;
         config.rcc.hse = Some(Hse {
-            freq: mhz(8),
+            freq: mhz(16),
             mode: HseMode::Oscillator,
         });
         config.rcc.pll = Some(Pll {
@@ -47,9 +47,9 @@ async fn main(spawner: Spawner) {
         });
 
         config.rcc.sys = Sysclk::PLL1_R;
-        config.rcc.ahb_pre = AHBPrescaler::DIV2;
-        config.rcc.apb1_pre = APBPrescaler::DIV2;
-        config.rcc.apb2_pre = APBPrescaler::DIV2;
+        config.rcc.ahb_pre = AHBPrescaler::DIV1;
+        config.rcc.apb1_pre = APBPrescaler::DIV1;
+        config.rcc.apb2_pre = APBPrescaler::DIV1;
     }
 
     let p = embassy_stm32::init(config);
@@ -59,7 +59,7 @@ async fn main(spawner: Spawner) {
     config.sda_pullup = true;
     config.scl_pullup = true;
     // what exatly is this?
-    //config.timeout = Duration::from_millis(5);
+    config.timeout = Duration::from_millis(50);
 
     let d_addr_config = i2c::SlaveAddrConfig {
         addr: OwnAddresses::OA1(Address::SevenBit(DEV_ADDR)),
@@ -76,7 +76,7 @@ async fn main(spawner: Spawner) {
     .into_slave_multimaster(d_addr_config);
 
     info!("Blinking LED");
-    unwrap!(spawner.spawn(system_ticker(led)));
+    //unwrap!(spawner.spawn(system_ticker(led)));
 
     info!("Device start");
     let state = 5;
