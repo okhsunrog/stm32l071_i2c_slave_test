@@ -59,7 +59,7 @@ async fn main(spawner: Spawner) {
     config.sda_pullup = true;
     config.scl_pullup = true;
     // what exatly is this?
-    config.timeout = Duration::from_millis(50);
+    config.timeout = Duration::from_micros(300);
 
     let d_addr_config = i2c::SlaveAddrConfig {
         addr: OwnAddresses::OA1(Address::SevenBit(DEV_ADDR)),
@@ -79,7 +79,7 @@ async fn main(spawner: Spawner) {
     //unwrap!(spawner.spawn(system_ticker(led)));
 
     info!("Device start");
-    let state = 5;
+    let mut state: u8 = 5;
 
     loop {
         let mut buf = [0u8; 16];
@@ -90,10 +90,7 @@ async fn main(spawner: Spawner) {
             }) => {
                 info!("Read command");
                 match dev.respond_to_read(&[state]).await {
-                    Ok(i2c::SendStatus::LeftoverBytes(x)) => {
-                        info!("tried to write {} extra bytes", x)
-                    }
-                    Ok(i2c::SendStatus::Done) => {
+                    Ok(_) => {
                         info!("Successfully responded to read");
                     }
                     Err(e) => error!("error while responding {}", e),
@@ -111,6 +108,7 @@ async fn main(spawner: Spawner) {
                     }
                     Err(e) => error!("error while responding {}", e),
                 }
+                state = buf[0];
             }
             Ok(i2c::SlaveCommand { address, .. }) => {
                 defmt::unreachable!(
